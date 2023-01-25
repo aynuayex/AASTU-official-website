@@ -1,0 +1,15 @@
+###
+post http://localhost:5000/user/password-reset
+Content-Type: application/json
+
+{
+    "email": "aynuman19@gmail.com"
+}
+
+###
+post  http://localhost:5000/user/password-reset/63c1bceb8d248f731c1b0286/10303adbbd0ea16892af633b7d39ae94412cfe9a32454521844a298aa47948e0
+Content-Type: application/json
+
+{
+    "password": "123"
+}
