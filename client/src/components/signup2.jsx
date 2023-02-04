@@ -1,20 +1,70 @@
-import React, { useContext, useState } from "react";
-import { useLocation, Link,Navigate } from "react-router-dom";
+import React, { useContext, useState, useEffect } from "react";
+import { useLocation, Link, Navigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import { UserContext } from "../App";
 
+function StudentDetails({ userType, id, batch, setId, setBatch }) {
+  useEffect(() => {
+    if (userType !== "Student") {
+      setId("none");
+      setBatch(0);
+    }
+  }, []);
+
+  if (userType !== "Student") {
+    return null;
+  }
+
+  return (
+    <>
+      <div className="mt-5">
+        <label htmlFor="ide" className="block font-semibold  ">
+          ID
+        </label>
+        <input
+          type="text"
+          id="ide"
+          value={id}
+          onChange={(e) => setId(e.target.value)}
+          className="border h-5 w-full px-3 py-5 rounded-md focus:outline-2 focus:outline-blue-600"
+          placeholder="ETS0168/11"
+          required
+        />
+      </div>
+      <div className="mt-5">
+        <label htmlFor="bat" className="block font-semibold  ">
+          Batch
+        </label>
+        <select
+          id="bat"
+          value={batch}
+          onChange={(e) => setBatch(e.target.value)}
+          className="border h-10 w-full px-3 rounded-md focus:outline-2 focus:outline-blue-600"
+          required
+        >
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          <option>5</option>
+          <option>6</option>
+        </select>
+      </div>
+    </>
+  );
+}
+
 function SignUpFinal() {
+  const [id, setId] = useState("");
   const [batch, setBatch] = useState(1);
-  const [sex, setSex] = useState("Male");
-  const [age, setAge] = useState(18);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [inputType, setInputType] = useState("password");
   const [icon, setIcon] = useState(<FaEye />);
   const [success, setSuccess] = useState("");
 
-  const {state,dispatch} = useContext(UserContext);
+  const { state, dispatch } = useContext(UserContext);
 
   function handleToggle(e) {
     if (inputType === "password") {
@@ -27,101 +77,67 @@ function SignUpFinal() {
   }
 
   const location = useLocation();
+  const { fullName, email, userType, department, stream } = location.state;
 
   function handleSubmit(e) {
     e.preventDefault();
-    const { fullName, email, id, department, stream } = location.state;
     const user = {
       fullName,
       email,
-      id,
+      userType,
       department,
       stream,
+      id,
       batch,
-      sex,
-      age,
       phoneNumber,
       password,
     };
     console.log(
-      `fullName: ${fullName},email: ${email},id: ${id},department: ${department},stream: ${stream},batch: ${batch}, sex: ${sex}, age: ${age}, phoneNumber: ${phoneNumber}, password: ${password}`
+      `fullName: ${fullName},email: ${email},userType: ${userType},department: ${department},stream: ${stream}, id:${id}, batch: ${batch}, phoneNumber: ${phoneNumber}, password: ${password}`
     );
     axios
-      .post("http://localhost:5000/student/register", user)
+      .post("http://localhost:5000/user/register", user)
       .then((res) => {
-        dispatch({type: "USER",payload: true});
-        setSuccess(`welcome ${res.data.user} you are successfully registered`);
+        dispatch({
+          type: "USER",
+          payload: { logStatus: true, identity: res.data.identity },
+        });
+        if ((userType === "Admin") && (res.data.identity.approved === false)){
+          setSuccess(
+            `${res.data.user},your account has been saved successfully please wait for the Admins to approve!`
+            );
+        }else{
+            setSuccess(
+              `welcome ${res.data.user} you are successfully registered`
+            );
+        }
       })
-      .catch((err) => {;
+      .catch((err) => {
         setSuccess(`ERROR is ${err}`);
       });
   }
 
-  if (state) {
+  if (state.logStatus) {
     return <Navigate to="/profile" state={{ mes: success }} />;
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="text-center text-lg text-red-500 font-semibold">{success}</div>
+      <div className="text-center text-lg text-red-500 font-semibold">
+        {success}
+      </div>
       <div className="h-auto w-5/12 border mx-auto rounded-2xl mt-3 mb-3">
         <div className="h-2 bg-indigo-400 rounded-t-2xl mb-5 "></div>
         <div className="font-bold text-2xl text-center">Sign Up</div>
         <div className="px-16">
-          <div className="mt-5">
-            <label htmlFor="bat" className="block font-semibold  ">
-              Batch
-            </label>
-            <select
-              id="bat"
-              value={batch}
-              onChange={(e) => setBatch(e.target.value)}
-              className="border h-10 w-full px-3 rounded-md focus:outline-2 focus:outline-blue-600"
-              required
-            >
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-              <option>5</option>
-              <option>6</option>
-            </select>
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="sex" className="block font-semibold  ">
-              Sex
-            </label>
-            <select
-              id="sex"
-              value={sex}
-              onChange={(e) => setSex(e.target.value)}
-              className="border h-10 w-full px-3 rounded-md focus:outline-2 focus:outline-blue-600"
-              required
-            >
-              <option>Male</option>
-              <option>Female</option>
-            </select>
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="age" className="block font-semibold  ">
-              Age
-            </label>
-            <input
-              type="number"
-              id="age"
-              min="18"
-              max="70"
-              value={age}
-              onChange={(e) => setAge(e.target.value)}
-              className="border h-5 w-full px-3 py-5 rounded-md focus:outline-2 focus:outline-blue-600"
-              placeholder="Enter your Age"
-              required
-            />
-          </div>
-
-          <div className="mb-3">
+          <StudentDetails
+            userType={userType}
+            id={id}
+            batch={batch}
+            setId={setId}
+            setBatch={setBatch}
+          />
+          <div className="mt-5 mb-3">
             <label htmlFor="num" className="block font-semibold  ">
               Phone Number
             </label>

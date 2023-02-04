@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const flash = require("connect-flash");
+// const flash = require("connect-flash");
 const session = require("express-session");
 const passport = require("passport");
 const mongoose = require("mongoose");
@@ -9,10 +9,10 @@ const MongoStore = require("connect-mongo");
 const cors = require("cors");
 
 app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-app.use(flash());
+// app.use(flash());
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -38,13 +38,9 @@ mongoose
     console.log(`DB connection Error: ${err}`);
   });
 
-  const teacherRouter = require("./routes/teacherRoutes");
-  const studentRouter = require("./routes/studentRoutes");
-  const adminRouter = require("./routes/adminRoutes");
+  const userRouter = require("./routes/userRoutes");
 
-  app.use("/teacher", teacherRouter);
-  app.use("/admin", adminRouter);
-  app.use("/student", studentRouter);
+  app.use("/user", userRouter);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 function SignUp() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
-  const [id, setId] = useState("");
+  const [userType, setUserType] = useState("Student");
   const [department, setDepartment] = useState(
     "Electrical and Computer Engineering"
   );
@@ -43,6 +43,17 @@ function SignUp() {
   const dep = department.split(" ").join("");
   const streams = deps[dep];
 
+  useEffect(() => {
+    if (userType !== "Student") {
+      setDepartment("none");
+      setStream("none");
+    }
+    else{
+      setDepartment("Electrical and Computer Engineering");
+      setStream("None");
+    }
+  }, [userType]);
+
   return (
     <form>
       <div className="h-auto w-5/12 border mx-auto rounded-2xl mt-3 mb-3">
@@ -80,64 +91,77 @@ function SignUp() {
             />
           </div>
 
-          <div className="mt-5">
-            <label htmlFor="ide" className="block font-semibold  ">
-              ID
-            </label>
-            <input
-              type="text"
-              id="ide"
-              value={id}
-              onChange={(e) => setId(e.target.value)}
-              className="border h-5 w-full px-3 py-5 rounded-md focus:outline-2 focus:outline-blue-600"
-              placeholder="ETS0168/11"
-              required
-            />
-          </div>
-
-          <div className="mt-5">
-            <label htmlFor="dep" className="block font-semibold  ">
-              Department
+          <div className="mt-5 mb-3">
+            <label htmlFor="user" className="block font-semibold  ">
+              userType
             </label>
             <select
-              id="dep"
-              value={department}
-              onChange={handleDep}
+              id="user"
+              value={userType}
+              onChange={(e) => setUserType(e.target.value)}
               className="border h-10 w-full px-3 rounded-md focus:outline-2 focus:outline-blue-600"
               required
             >
-              <option>Electrical and Computer Engineering</option>
-              <option>Chemical Engineering</option>
-              <option>Mining Engineering</option>
-              <option>Civil Engineering</option>
-              <option>Mechanical Engineering</option>
-              <option>Software Engineering</option>
-              <option>Electromechanical Engineering</option>
-              <option>Environmental Engineering</option>
+              <option>Student</option>
+              <option>Teacher</option>
+              <option>Admin</option>
             </select>
           </div>
 
-          <div className="mt-5">
-            <label htmlFor="str" className="block font-semibold  ">
-              Stream
-            </label>
-            <select
-              id="str"
-              value={stream}
-              onChange={(e) => setStream(e.target.value)}
-              className="border h-10 w-full px-3 rounded-md focus:outline-2 focus:outline-blue-600"
-              required
-            >
-              {streams && streams.map((st) => <option key={st}>{st}</option>)}
-            </select>
-          </div>
+          {userType === "Student" ? (
+            <>
+              <div className="mt-5">
+                <label htmlFor="dep" className="block font-semibold  ">
+                  Department
+                </label>
+                <select
+                  id="dep"
+                  value={department}
+                  onChange={handleDep}
+                  className="border h-10 w-full px-3 rounded-md focus:outline-2 focus:outline-blue-600"
+                  required
+                >
+                  <option>Electrical and Computer Engineering</option>
+                  <option>Chemical Engineering</option>
+                  <option>Mining Engineering</option>
+                  <option>Civil Engineering</option>
+                  <option>Mechanical Engineering</option>
+                  <option>Software Engineering</option>
+                  <option>Electromechanical Engineering</option>
+                  <option>Environmental Engineering</option>
+                </select>
+              </div>
+
+              <div className="mt-5">
+                <label htmlFor="str" className="block font-semibold  ">
+                  Stream
+                </label>
+                <select
+                  id="str"
+                  value={stream}
+                  onChange={(e) => setStream(e.target.value)}
+                  className="border h-10 w-full px-3 rounded-md focus:outline-2 focus:outline-blue-600"
+                  required
+                >
+                  {streams &&
+                    streams.map((st) => <option key={st}>{st}</option>)}
+                </select>
+              </div>
+            </>
+          ) : (<>
+              
+              </>
+          )}
 
           <div className="">
             <Link
               to="/sign-up2"
-              state={{ fullName, email, id, department, stream }}
+              state={{ fullName, email, userType, department, stream }}
             >
-              <button type="submit" className="mt-5 text-white bg-blue-600 border h-10 w-full py-2 rounded-md">
+              <button
+                type="submit"
+                className="mt-5 text-white bg-blue-600 border h-10 w-full py-2 rounded-md"
+              >
                 Next
               </button>
             </Link>

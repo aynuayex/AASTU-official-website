@@ -9,19 +9,19 @@ function Navbar() {
     <nav className="bg-white ">
       <img src={logo1} alt="" className="h-48 w-full  " />
       <div className="flex justify-around w-full h-10 bg-gray-200">
-        <CustomLink to="/">Home</CustomLink>
+        <CustomLink to="/" exact={true}>Home</CustomLink>
 
-        <CustomLink to="/news">News</CustomLink>
+        <CustomLink to="/news" exact={true}>News</CustomLink>
 
-        <CustomLink to="/profile">Profile</CustomLink>
+        <CustomLink to="/profile" exact={false}>Profile</CustomLink>
 
-        <CustomLink to="/about">About</CustomLink>
-        {state ? (
-          <CustomLink to="/sign-out">Logout</CustomLink>
+        <CustomLink to="/about" exact={true}>About</CustomLink>
+        {state.logStatus ? (
+          <CustomLink to="/sign-out" exact={true}>Logout</CustomLink>
         ) : (
           <>
-            <CustomLink to="/sign-in">Login</CustomLink>
-            <CustomLink to="/sign-up">Register</CustomLink>
+            <CustomLink to="/sign-in" exact={true}>Login</CustomLink>
+            <CustomLink to="/sign-up" exact={true}>Register</CustomLink>
           </>
         )}
       </div>
@@ -29,9 +29,9 @@ function Navbar() {
   );
 }
 
-function CustomLink({ to, children, ...props }) {
+function CustomLink({ to, children, exact, ...props }) {
   const resolvedPath = useResolvedPath(to);
-  const isActive = useMatch({ path: resolvedPath.pathname, end: true });
+  const isActive = useMatch({ path: resolvedPath.pathname, end: exact });
 
   return (
     <div

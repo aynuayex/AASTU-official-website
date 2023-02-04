@@ -29,10 +29,19 @@ const {state, dispatch} = useContext(UserContext);
     const user = { email, password };
     console.log(`email: ${email}, password: ${password}`);
     axios
-      .post("http://localhost:5000/student/login", user)
+      .post("http://localhost:5000/user/login", user)
       .then((res) =>{
-        dispatch({type: "USER",payload: true});
-      setSuccess(`welcome ${res.data.user} you are successfully Logged in!`);
+        console.log(res.data.identity)
+        dispatch({type: "USER",payload: {logStatus: true, identity: res.data.identity}});
+        if ((res.data.identity.id === "Admin") && (res.data.identity.approved === false)){
+          setSuccess(
+            `${res.data.user},please wait for the Admins to approve your account!`
+            );
+        }else{
+            setSuccess(
+              `welcome ${res.data.user} you are successfully Logged in!`
+            );
+        }
       }
       )
       .catch((err) => {
@@ -41,7 +50,7 @@ const {state, dispatch} = useContext(UserContext);
       });
   }
 
-  if(state){
+  if(state.logStatus){
    return <Navigate to="/profile" state={{mes: success }} />
   }
 

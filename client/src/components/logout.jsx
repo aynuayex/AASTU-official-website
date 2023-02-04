@@ -10,9 +10,9 @@ const {state,dispatch} = useContext(UserContext);
   function handleClick() {
     
     axios
-      .get("http://localhost:5000/student/logout")
+      .get("http://localhost:5000/user/logout")
       .then((res) =>{
-        dispatch({type: "USER",payload: false});
+        dispatch({type: "USER",payload: {logStatus: false, identity: {}}});
       console.log(res.data.user);
       }
       )
@@ -20,7 +20,7 @@ const {state,dispatch} = useContext(UserContext);
         console.log(`ERROR is ${err}`);
       });
   }
-if(!state){
+if(!state.logStatus){
     
     return <Navigate to="/" state={{mes: "You have logged out of your account!"}}/>
 }
